@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./memorama.css";
 
-/**
- * Memorama funcional y estable:
- * - Cada carta es { id, value, matched }
- * - deck se crea y baraja una sola vez al montar
- * - flipped guarda índices de cartas volteadas (máx 2)
- * - locked evita que el usuario haga clic mientras comprobamos
- */
+// Valores por nivel
+const LEVEL_VALUES = {
+    facil: ["🐶", "🐱", "🐰", "🐸"],                 // 4 parejas
+    normal: ["🐶", "🐱", "🐰", "🐸", "🐵", "🐼"],     // 6 parejas
+    dificil: ["🐶", "🐱", "🐰", "🐸", "🐵", "🐼", "🦊", "🐻"] // 8 parejas
+};
 
-const BASE_VALUES = ["🐶", "🐱", "🐰", "🐸"]; // puedes cambiar/agregar
-
-// Fisher-Yates shuffle (no muta el array original si pasas copia)
+// Barajar array
 function shuffleArray(arr) {
-    const a = arr.slice();
+    const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
@@ -21,34 +18,51 @@ function shuffleArray(arr) {
     return a;
 }
 
-// Crea el deck: duplica los valores, crea objetos con id y los baraja
+// Crear cartas
 function createDeck(values) {
     const doubled = values.concat(values).map((v, i) => ({
-        id: i,       // id único por posición inicial antes del shuffle
+        id: i,
         value: v,
         matched: false,
     }));
-    const shuffled = shuffleArray(doubled).map((card, idx) => ({
+
+    const shuffled = shuffleArray(doubled).map((card, index) => ({
         ...card,
-        id: idx, // reasignamos id por posición en el deck barajado (útil como key)
+        id: index,
     }));
+
     return shuffled;
 }
 
 export default function Memorama({ onBack }) {
-    const [deck, setDeck] = useState(() => createDeck(BASE_VALUES));
-    const [flipped, setFlipped] = useState([]); // indices (posiciones) de cartas volteadas ahora
+    const [nivel, setNivel] = useState(null);
+    const [deck, setDeck] = useState([]);
+    const [flipped, setFlipped] = useState([]);
     const [locked, setLocked] = useState(false);
     const [pairsFound, setPairsFound] = useState(0);
 
-    // Reiniciar juego helper (si quieres botón reiniciar)
-    const resetGame = () => {
-        setDeck(createDeck(BASE_VALUES));
-        setFlipped([]);
-        setLocked(false);
-        setPairsFound(0);
+    // Avanzar al siguiente nivel
+    const avanzarNivel = () => {
+        if (nivel === "facil") setNivel("normal");
+        else if (nivel === "normal") setNivel("dificil");
+        else if (nivel === "dificil") {
+            // Juego terminado
+            setNivel(null);
+            onBack(); // regresar al menú principal
+        }
     };
 
+    // Cuando el usuario selecciona nivel → crear deck
+    useEffect(() => {
+        if (nivel) {
+            const values = LEVEL_VALUES[nivel];
+            setDeck(createDeck(values));
+            setPairsFound(0);
+            setFlipped([]);
+        }
+    }, [nivel]);
+
+    // Acción al dar clic a una carta
     const handleClick = (index) => {
         if (locked) return;
         if (flipped.includes(index)) return;
@@ -60,53 +74,86 @@ export default function Memorama({ onBack }) {
         if (newFlipped.length === 2) {
             setLocked(true);
             const [a, b] = newFlipped;
+
             if (deck[a].value === deck[b].value) {
-                // acierto: marcar matched en deck
                 setTimeout(() => {
-                    setDeck(prevDeck => {
-                        const copy = prevDeck.slice();
-                        copy[a] = { ...copy[a], matched: true };
-                        copy[b] = { ...copy[b], matched: true };
+                    setDeck(prev => {
+                        const copy = [...prev];
+                        copy[a].matched = true;
+                        copy[b].matched = true;
                         return copy;
                     });
                     setFlipped([]);
                     setLocked(false);
                     setPairsFound(prev => prev + 1);
-                }, 700);
+                }, 600);
             } else {
-                // error: voltearlas después de un tiempo
                 setTimeout(() => {
                     setFlipped([]);
                     setLocked(false);
-                }, 700);
+                }, 600);
             }
         }
     };
 
-    useEffect(() => {
-        if (pairsFound === BASE_VALUES.length) {
-            // Opcional: mensaje cuando termine
-            // alert("¡Felicidades! Encontraste todas las parejas.");
-            // podrías show modal, animación, etc.
-        }
-    }, [pairsFound]);
+    // Si no hay nivel, mostrar selector
+    if (!nivel) {
+        return (
+            <div className="selector-nivel" style={{ textAlign: "center", padding: 20 }}>
+                <h2 className="titulo">Seleccione la dificultad</h2>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 15, marginTop: 20 }}>
+                    <button className="btn-nivel" onClick={() => setNivel("facil")}>
+                        🟢 Fácil (4 parejas)
+                    </button>
+
+                    <button className="btn-nivel" onClick={() => setNivel("normal")}>
+                        🟡 Normal (6 parejas)
+                    </button>
+
+                    <button className="btn-nivel" onClick={() => setNivel("dificil")}>
+                        🔴 Difícil (8 parejas)
+                    </button>
+                </div>
+
+                <button className="btn-volver" onClick={onBack} style={{ marginTop: 25 }}>
+                    ⬅ Regresar
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="memorama-container">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 720, margin: "0 auto" }}>
-                <button className="btn-volver" onClick={onBack}>⬅ Regresar</button>
+
+            {/* HEADER */}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    maxWidth: 720,
+                    margin: "0 auto",
+                }}
+            >
+                <button className="btn-volver" onClick={() => setNivel(null)}>⬅ Nivel</button>
+
                 <div style={{ textAlign: "center" }}>
-                    <h2 className="titulo">🎮 Memorama</h2>
-                    <div style={{ fontSize: 14, color: "#555" }}>{pairsFound} / {BASE_VALUES.length} parejas encontradas</div>
+                    <h2 className="titulo">🎮 Memorama – {nivel.toUpperCase()}</h2>
+
+                    <div style={{ fontSize: 14, color: "#555", marginBottom: "25px" }}>
+                        {pairsFound} / {LEVEL_VALUES[nivel].length} parejas encontradas
+                    </div>
                 </div>
-                <div>
-                    <button className="btn-reiniciar" onClick={resetGame}>Reiniciar ↺</button>
-                </div>
+
+                <button className="btn-reiniciar" onClick={() => setNivel(nivel)}>Reiniciar ↺</button>
             </div>
 
-            <div className="grid">
+            {/* GRID */}
+            <div className="grid" style={{ marginTop: "30px" }}>
                 {deck.map((card, i) => {
                     const isOpen = flipped.includes(i) || card.matched;
+
                     return (
                         <div
                             key={card.id}
@@ -118,6 +165,28 @@ export default function Memorama({ onBack }) {
                     );
                 })}
             </div>
+
+            {/* ANIMACIÓN DE FINAL */}
+            {pairsFound === LEVEL_VALUES[nivel].length && (
+                <div className="ganaste-overlay">
+                    <div className="ganaste-box">
+                        🎉 ¡Nivel completado!
+                        <br /><br />
+
+                        <button className="btn-nivel" onClick={avanzarNivel}>
+                            ➜ Siguiente Nivel
+                        </button>
+
+                        <button
+                            className="btn-volver"
+                            style={{ marginTop: 15 }}
+                            onClick={onBack}
+                        >
+                            ⬅ Salir al inicio
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,0 +1,35 @@
+.imagenes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+    justify-items: center;
+}
+
+.imagen-opcion {
+    width: 100px;
+    /* Tamaño más pequeño */
+    height: 100px;
+    /* Mantiene proporción cuadrada */
+    object-fit: contain;
+    /* Evita deformación */
+    background: white;
+    padding: 8px;
+    /* Marco interno bonito */
+    border-radius: 12px;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.imagen-opcion:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 12px #777;
+}
+
+.mensaje-resultado {
+    margin-top: 20px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
+}

@@ -25,7 +25,7 @@ export default function JuegosEducativos({ onBack, seleccionarJuego }) {
 
                 <button
                     className="juego-card"
-                    onClick={() => seleccionarJuego("adivina")}
+                    onClick={() => seleccionarJuego("adivinaPalabra")}
                 >
                     ❓ Adivina la Palabra
                 </button>

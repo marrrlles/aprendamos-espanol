@@ -1,5 +1,6 @@
 import "../../styles/vocab.css";
-
+import milkImg from "../../assets/images/milk.png";
+import eggImg from "../../assets/images/egg.png";
 
 export default function VocabAlimentos({ onBack }) {
     return (
@@ -28,7 +29,7 @@ export default function VocabAlimentos({ onBack }) {
 
                 <div className="vocab-item">
                     <img
-                        src="https://cdn-icons-png.flaticon.com/512/766/766378.png"
+                        src={milkImg} // ⬅ Aquí usamos la imagen local
                         className="vocab-img"
                         alt="Leche"
                     />
@@ -73,11 +74,11 @@ export default function VocabAlimentos({ onBack }) {
 
                 <div className="vocab-item">
                     <img
-                        src="https://cdn-icons-png.flaticon.com/512/877/877951.png"
+                        src={eggImg} // ⬅ Aquí usamos la imagen local
                         className="vocab-img"
-                        alt="Hamburguesa"
+                        alt="Leche"
                     />
-                    <p>Hamburguesa</p>
+                    <p>Huevo</p>
                 </div>
 
             </div>

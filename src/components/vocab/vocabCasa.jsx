@@ -1,5 +1,8 @@
 import "../../styles/vocab.css";
-
+import sofaImg from "../../assets/images/sofa.png";
+import sillaImg from "../../assets/images/chair.png";
+import mesaImg from "../../assets/images/table.png";
+import cuadroImg from "../../assets/images/art.png";
 
 export default function VocabCasa({ onBack }) {
     return (
@@ -35,14 +38,7 @@ export default function VocabCasa({ onBack }) {
                     <p>Decoración</p>
                 </div>
 
-                <div className="vocab-item">
-                    <img
-                        src="https://cdn-icons-png.flaticon.com/512/1046/1046853.png"
-                        className="vocab-img"
-                        alt="Puerta"
-                    />
-                    <p>estek</p>
-                </div>
+
 
                 <div className="vocab-item">
                     <img
@@ -53,32 +49,44 @@ export default function VocabCasa({ onBack }) {
                     <p>Maceta</p>
                 </div>
 
+
                 <div className="vocab-item">
                     <img
-                        src="https://cdn-icons-png.flaticon.com/512/1048/1048319.png"
+                        src={sofaImg}
                         className="vocab-img"
-                        alt="auto"
+                        alt="Sofa"
                     />
-                    <p>Auto?</p>
+                    <p>Sofa</p>
                 </div>
 
                 <div className="vocab-item">
                     <img
-                        src="https://cdn-icons-png.flaticon.com/512/1048/1048273.png"
+                        src={sillaImg}
                         className="vocab-img"
-                        alt="wtf"
+                        alt="Silla"
                     />
-                    <p>wtf</p>
+                    <p>Silla</p>
                 </div>
 
                 <div className="vocab-item">
                     <img
-                        src="https://cdn-icons-png.flaticon.com/512/878/878052.png"
+                        src={mesaImg}
                         className="vocab-img"
-                        alt="ora"
+                        alt="Mesa"
                     />
-                    <p>ora</p>
+                    <p>Mesa</p>
                 </div>
+
+
+                <div className="vocab-item">
+                    <img
+                        src={cuadroImg}
+                        className="vocab-img"
+                        alt="Cuadro"
+                    />
+                    <p>Recuadro</p>
+                </div>
+
 
             </div>
 
